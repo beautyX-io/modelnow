@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet data-dc-atomics><meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EFEAE3;font-family:Pretendard,system-ui,sans-serif;color:#1C1917}
+a{color:#A0611F}a:hover{color:#7A4715}
+::-webkit-scrollbar{width:0;height:0}
+</style></helmet>
+
+<section style="padding:44px 48px 36px;border-bottom:1px solid rgba(0,0,0,.08)" id="t1">
+  <div style="display:flex;align-items:baseline;gap:10px;margin:0 0 6px">
+    <a href="#t1" style="font:600 10px ui-monospace,Menlo,monospace;padding:3px 7px;background:#1C1917;color:#fff;border-radius:4px;text-decoration:none">1</a>
+    <span style="font:600 13px/1.2 Pretendard,sans-serif">모델 매칭 앱 — 첫 방향</span>
+  </div>
+  <p style="max-width:720px;margin:0 0 28px;font:400 12.5px/1.7 Pretendard,sans-serif;color:rgba(28,25,23,.6)">답변을 못 받아서 가정하고 진행했습니다. 서비스명 <strong style="font-weight:600">MUZE</strong>(가칭), 지원자(일반인) 화면을 메인으로, 디자이너 화면을 짝으로 만들었습니다. 사진 3장 규격(메인=정면 얼굴/손등, 추가=현재 상태·희망 스타일)과 인스타·카카오 오픈채팅 임베드는 지원서와 지원자 상세 양쪽에 넣었습니다. 사진은 모두 자리표시자입니다. 폰을 직접 눌러보실 수 있습니다.</p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:44px;align-items:flex-start">
+
+    <div id="1a" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Pretendard,sans-serif;color:rgba(28,25,23,.55)">
+        <a href="#1a" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1C1917;border-radius:5px;text-decoration:none">1a</a>
+        모델 지원 플로우 · 모집 피드 → 상세 → 사진 3장 지원서 → 완료
+      </div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+
+        <sc-if value="{{ mFeed }}" hint-placeholder-val="{{ true }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#FBF9F6">
+          <div style="padding:62px 20px 12px;background:#FBF9F6">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="font:800 25px/1 Pretendard,sans-serif;letter-spacing:-.03em">MUZE</div>
+              <div style="display:flex;gap:8px;align-items:center">
+                <div style="width:34px;height:34px;border-radius:17px;border:1px solid #E6DFD6;display:flex;align-items:center;justify-content:center;font:500 12px Pretendard,sans-serif;color:#8A8078">서울</div>
+                <div style="width:34px;height:34px;border-radius:17px;background:#FBE7CB"></div>
+              </div>
+            </div>
+            <div style="display:flex;gap:7px;margin-top:16px">
+              <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="3">
+                <div onClick="{{ t.pick }}" style="padding:7px 15px;border-radius:999px;font:600 13px Pretendard,sans-serif;cursor:pointer;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="flex:1;overflow:auto;padding:6px 20px 96px;display:flex;flex-direction:column;gap:14px">
+            <sc-for list="{{ posts }}" as="p" hint-placeholder-count="4">
+              <div onClick="{{ p.open }}" style="cursor:pointer;background:#fff;border:1px solid #EDE7DE;border-radius:24px;overflow:hidden">
+                <div style="height:168px;background:repeating-linear-gradient(135deg,#F1ECE5 0 9px,#E7E0D6 9px 18px);display:flex;align-items:flex-end;justify-content:space-between;padding:12px">
+                  <span style="font:500 10px ui-monospace,monospace;color:#8A8078;background:rgba(255,255,255,.85);padding:4px 7px;border-radius:5px">{{ p.shot }}</span>
+                  <span style="font:600 11px Pretendard,sans-serif;color:#fff;background:#1C1917;padding:5px 9px;border-radius:6px">{{ p.cat }}</span>
+                </div>
+                <div style="padding:14px 15px 15px">
+                  <div style="font:600 16px/1.35 Pretendard,sans-serif;letter-spacing:-.01em">{{ p.title }}</div>
+                  <div style="margin-top:6px;font:400 13px Pretendard,sans-serif;color:#8A8078">{{ p.who }}</div>
+                  <div style="display:flex;gap:6px;margin-top:11px;flex-wrap:wrap">
+                    <span style="font:500 12px Pretendard,sans-serif;color:#A0611F;background:#FDF1E0;padding:5px 9px;border-radius:6px">{{ p.reward }}</span>
+                    <span style="font:500 12px Pretendard,sans-serif;color:#57504A;background:#F3EFE9;padding:5px 9px;border-radius:6px">{{ p.dur }}</span>
+                    <span style="font:500 12px Pretendard,sans-serif;color:#57504A;background:#F3EFE9;padding:5px 9px;border-radius:6px">{{ p.when }}</span>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:82px;background:rgba(251,249,246,.92);backdrop-filter:blur(18px);border-top:1px solid #EDE7DE;display:flex;padding:10px 18px 0">
+            <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+              <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:5px">
+                <div style="width:20px;height:20px;border-radius:6px;background:{{ n.dot }}"></div>
+                <div style="font:500 10.5px Pretendard,sans-serif;color:{{ n.fg }}">{{ n.label }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ mDetail }}" hint-placeholder-val="{{ false }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#FBF9F6">
+          <div style="height:260px;background:repeating-linear-gradient(135deg,#EAE3D9 0 9px,#E0D8CC 9px 18px);position:relative;flex:none">
+            <div onClick="{{ backFeed }}" style="position:absolute;top:58px;left:16px;width:36px;height:36px;border-radius:18px;background:rgba(255,255,255,.9);display:flex;align-items:center;justify-content:center;font:500 17px Pretendard,sans-serif;cursor:pointer">←</div>
+            <span style="position:absolute;bottom:12px;left:16px;font:500 10px ui-monospace,monospace;color:#8A8078;background:rgba(255,255,255,.85);padding:4px 7px;border-radius:5px">디자이너 포트폴리오 대표컷</span>
+          </div>
+          <div style="flex:1;overflow:auto;padding:0 20px 130px;margin-top:-22px">
+            <div style="background:#fff;border:1px solid #EDE7DE;border-radius:24px;padding:18px">
+              <div style="font:600 19px/1.35 Pretendard,sans-serif;letter-spacing:-.015em">{{ post.title }}</div>
+              <div style="display:flex;align-items:center;gap:10px;margin-top:14px">
+                <div style="width:40px;height:40px;border-radius:20px;background:repeating-linear-gradient(135deg,#F1ECE5 0 5px,#E4DCD1 5px 10px)"></div>
+                <div>
+                  <div style="font:600 14px Pretendard,sans-serif">{{ post.name }} 디자이너</div>
+                  <div style="font:400 12.5px Pretendard,sans-serif;color:#8A8078">{{ post.salon }}</div>
+                </div>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:18px">
+                <sc-for list="{{ specs }}" as="s" hint-placeholder-count="4">
+                  <div style="background:#F7F4EF;border-radius:12px;padding:11px 12px">
+                    <div style="font:500 11px Pretendard,sans-serif;color:#9A9189">{{ s.k }}</div>
+                    <div style="font:600 14px Pretendard,sans-serif;margin-top:3px">{{ s.v }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+
+            <div style="margin-top:22px;font:600 14px Pretendard,sans-serif">모델 조건</div>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ reqs }}" as="r" hint-placeholder-count="4">
+                <div style="display:flex;gap:9px;align-items:flex-start">
+                  <div style="width:6px;height:6px;border-radius:3px;background:#A0611F;margin-top:7px;flex:none"></div>
+                  <div style="font:400 14px/1.55 Pretendard,sans-serif;color:#3D3733">{{ r }}</div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:22px;font:600 14px Pretendard,sans-serif">포트폴리오</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:10px">
+              <sc-for list="{{ folio }}" as="f" hint-placeholder-count="3">
+                <div style="aspect-ratio:3/4;border-radius:12px;background:repeating-linear-gradient(135deg,#F1ECE5 0 7px,#E5DED3 7px 14px);display:flex;align-items:flex-end;padding:7px">
+                  <span style="font:500 9px ui-monospace,monospace;color:#8A8078">{{ f }}</span>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="margin-top:22px;font:600 14px Pretendard,sans-serif">연결</div>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:9px">
+              <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #EDE7DE;border-radius:18px;padding:14px">
+                <div style="width:34px;height:34px;border-radius:10px;background:#FBE7CB"></div>
+                <div style="flex:1">
+                  <div style="font:600 13.5px Pretendard,sans-serif">@{{ post.insta }}</div>
+                  <div style="font:400 11.5px Pretendard,sans-serif;color:#9A9189">인스타그램 · 게시물 {{ post.feedCount }}</div>
+                </div>
+                <div style="font:600 12.5px Pretendard,sans-serif;color:#A0611F">열기</div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #EDE7DE;border-radius:18px;padding:14px">
+                <div style="width:34px;height:34px;border-radius:10px;background:#F6EDD2"></div>
+                <div style="flex:1">
+                  <div style="font:600 13.5px Pretendard,sans-serif">카카오톡 오픈채팅</div>
+                  <div style="font:400 11.5px Pretendard,sans-serif;color:#9A9189">open.kakao.com/o/{{ post.kakao }}</div>
+                </div>
+                <div style="font:600 12.5px Pretendard,sans-serif;color:#A0611F">참여</div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 20px 30px;background:rgba(251,249,246,.94);backdrop-filter:blur(18px);border-top:1px solid #EDE7DE;display:flex;gap:10px">
+            <div style="width:52px;height:54px;border-radius:18px;border:1px solid #E6DFD6;display:flex;align-items:center;justify-content:center;font:400 18px Pretendard,sans-serif;color:#8A8078">♡</div>
+            <div onClick="{{ startApply }}" style="flex:1;height:54px;border-radius:18px;background:#E0A96D;color:#2A2118;display:flex;align-items:center;justify-content:center;font:700 16px Pretendard,sans-serif;cursor:pointer">지원하기</div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ mApply }}" hint-placeholder-val="{{ false }}">
+        <div style="height:100%;display:flex;flex-direction:column;background:#FBF9F6">
+          <div style="padding:58px 20px 12px;flex:none">
+            <div style="display:flex;align-items:center;gap:12px">
+              <div onClick="{{ applyBack }}" style="width:34px;height:34px;border-radius:17px;border:1px solid #E6DFD6;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 16px Pretendard,sans-serif">←</div>
+              <div style="flex:1;font:600 15px Pretendard,sans-serif">지원서 · {{ stepLabel }}</div>
+              <div style="font:500 12px ui-monospace,monospace;color:#9A9189">{{ step }}/3</div>
+            </div>
+            <div style="display:flex;gap:5px;margin-top:14px">
+              <sc-for list="{{ stepBars }}" as="b" hint-placeholder-count="3">
+                <div style="flex:1;height:3px;border-radius:2px;background:{{ b.bg }}"></div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="flex:1;overflow:auto;padding:10px 20px 120px">
+            <sc-if value="{{ step1 }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <div style="font:400 13.5px/1.6 Pretendard,sans-serif;color:#8A8078">{{ shotGuide }}</div>
+              <div style="display:flex;flex-direction:column;gap:12px;margin-top:16px">
+                <sc-for list="{{ slots }}" as="s" hint-placeholder-count="3">
+                  <div onClick="{{ s.toggle }}" style="cursor:pointer;display:flex;gap:13px;align-items:center;background:#fff;border:1px {{ s.bs }} {{ s.bd }};border-radius:20px;padding:13px">
+                    <div style="width:{{ s.size }};height:{{ s.size }};border-radius:12px;flex:none;background:{{ s.fill }};display:flex;align-items:center;justify-content:center;font:500 20px Pretendard,sans-serif;color:#B49F98">{{ s.mark }}</div>
+                    <div style="flex:1;min-width:0">
+                      <div style="font:600 14px Pretendard,sans-serif">{{ s.title }}</div>
+                      <div style="font:400 12.5px/1.5 Pretendard,sans-serif;color:#9A9189;margin-top:3px">{{ s.hint }}</div>
+                      <div style="font:500 11px ui-monospace,monospace;color:{{ s.stFg }};margin-top:6px">{{ s.state }}</div>
+                    </div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top:16px;background:#FDF1E0;border-radius:18px;padding:14px;font:400 12.5px/1.6 Pretendard,sans-serif;color:#7A4715">사진은 수락 전까지 디자이너에게만 보이고, 모집이 끝나면 자동으로 비공개 처리됩니다.</div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ step2 }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <sc-for list="{{ condGroups }}" as="g" hint-placeholder-count="3">
+                <div style="margin-bottom:22px">
+                  <div style="font:600 14px Pretendard,sans-serif">{{ g.label }}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:7px;margin-top:10px">
+                    <sc-for list="{{ g.opts }}" as="o" hint-placeholder-count="4">
+                      <div onClick="{{ o.pick }}" style="cursor:pointer;padding:9px 14px;border-radius:999px;font:500 13px Pretendard,sans-serif;border:1px solid {{ o.bd }};background:{{ o.bg }};color:{{ o.fg }}">{{ o.label }}</div>
+                    </sc-for>
+                  </div>
+                </div>
+              </sc-for>
+              <div style="font:600 14px Pretendard,sans-serif">추가로 알릴 점</div>
+              <div style="margin-top:10px;background:#fff;border:1px solid #EDE7DE;border-radius:20px;padding:15px;min-height:88px;font:400 13.5px/1.6 Pretendard,sans-serif;color:#B6AEA6">두피가 예민한 편이라 탈색은 1회만 가능해요. 평일 오후 3시 이후로 방문할 수 있습니다.</div>
+            </div>
+            </sc-if>
+
+            <sc-if value="{{ step3 }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <div style="font:600 14px Pretendard,sans-serif">연락받을 방법</div>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px">
+                <div style="background:#fff;border:1px solid #EDE7DE;border-radius:20px;padding:15px">
+                  <div style="font:500 11.5px Pretendard,sans-serif;color:#9A9189">인스타그램</div>
+                  <div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+                    <span style="font:600 15px Pretendard,sans-serif;color:#B6AEA6">@</span>
+                    <span style="font:600 15px Pretendard,sans-serif">seo_yun.k</span>
+                  </div>
+                  <div style="margin-top:12px;border-top:1px solid #F1ECE5;padding-top:12px;display:flex;gap:6px">
+                    <sc-for list="{{ embed }}" as="e" hint-placeholder-count="3">
+                      <div style="flex:1;aspect-ratio:1;border-radius:9px;background:repeating-linear-gradient(135deg,#F1ECE5 0 6px,#E5DED3 6px 12px)"></div>
+                    </sc-for>
+                  </div>
+                  <div style="margin-top:9px;font:500 11px ui-monospace,monospace;color:#9A9189">미리보기 · 최근 게시물 3장 자동 임베드</div>
+                </div>
+                <div style="background:#fff;border:1px solid #EDE7DE;border-radius:20px;padding:15px">
+                  <div style="font:500 11.5px Pretendard,sans-serif;color:#9A9189">카카오톡 오픈채팅 링크</div>
+                  <div style="font:600 14px Pretendard,sans-serif;margin-top:6px;word-break:break-all">open.kakao.com/o/sYun2f9</div>
+                  <div style="margin-top:10px;display:inline-flex;align-items:center;gap:6px;background:#F7F2E2;border-radius:8px;padding:6px 10px;font:500 11.5px Pretendard,sans-serif;color:#7A6A2E">링크 확인됨 · 1:1 채팅방</div>
+                </div>
+              </div>
+              <div style="margin-top:22px;background:#fff;border:1px solid #EDE7DE;border-radius:20px;padding:17px">
+                <div style="font:600 14px Pretendard,sans-serif">보내기 전 확인</div>
+                <div style="margin-top:12px;display:flex;flex-direction:column;gap:9px">
+                  <sc-for list="{{ summary }}" as="s" hint-placeholder-count="4">
+                    <div style="display:flex;justify-content:space-between;gap:12px;font:400 13px Pretendard,sans-serif">
+                      <span style="color:#9A9189">{{ s.k }}</span>
+                      <span style="font-weight:600;text-align:right">{{ s.v }}</span>
+                    </div>
+                  </sc-for>
+                </div>
+              </div>
+            </div>
+            </sc-if>
+          </div>
+
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 20px 30px;background:rgba(251,249,246,.94);backdrop-filter:blur(18px);border-top:1px solid #EDE7DE">
+            <div onClick="{{ applyNext }}" style="height:54px;border-radius:18px;background:{{ nextBg }};color:{{ nextFg }};display:flex;align-items:center;justify-content:center;font:600 16px Pretendard,sans-serif;cursor:pointer">{{ nextLabel }}</div>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ mDone }}" hint-placeholder-val="{{ false }}">
+        <div style="height:100%;background:#FBF9F6;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 34px;text-align:center">
+          <div style="width:72px;height:72px;border-radius:36px;background:#FBE7CB;display:flex;align-items:center;justify-content:center;font:400 28px Pretendard,sans-serif;color:#A0611F">✓</div>
+          <div style="margin-top:22px;font:800 24px/1.35 Pretendard,sans-serif;letter-spacing:-.02em">지원서를 보냈어요</div>
+          <div style="margin-top:10px;font:400 14px/1.7 Pretendard,sans-serif;color:#8A8078">{{ post.name }} 디자이너가 확인하면 알림이 옵니다. 보통 하루 안에 답이 와요.</div>
+          <div onClick="{{ backFeed }}" style="margin-top:28px;padding:15px 28px;border-radius:18px;background:#1C1917;color:#fff;font:600 14px Pretendard,sans-serif;cursor:pointer">다른 모집 보기</div>
+        </div>
+        </sc-if>
+
+      </x-import>
+    </div>
+
+    <div id="1b" style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;align-items:baseline;gap:8px;font:400 11px/1.3 Pretendard,sans-serif;color:rgba(28,25,23,.55)">
+        <a href="#1b" style="font:600 10.5px ui-monospace,monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1C1917;border-radius:5px;text-decoration:none">1b</a>
+        디자이너 화면 · 내 모집 → 지원자 → 사진 3장 비교
+      </div>
+      <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" hint-size="402px,874px">
+        <sc-if value="{{ dList }}" hint-placeholder-val="{{ true }}">
+        <div style="height:100%;background:#FBF9F6;display:flex;flex-direction:column">
+          <div style="padding:62px 20px 10px">
+            <div style="font:400 13px Pretendard,sans-serif;color:#8A8078">라온헤어 · 강남</div>
+            <div style="font:800 25px/1.2 Pretendard,sans-serif;letter-spacing:-.03em;margin-top:4px">지원자 14명</div>
+          </div>
+          <div style="padding:8px 20px 0;display:flex;gap:7px">
+            <sc-for list="{{ dTabs }}" as="t" hint-placeholder-count="3">
+              <div onClick="{{ t.pick }}" style="padding:7px 14px;border-radius:999px;font:600 12.5px Pretendard,sans-serif;cursor:pointer;border:1px solid {{ t.bd }};background:{{ t.bg }};color:{{ t.fg }}">{{ t.label }}</div>
+            </sc-for>
+          </div>
+          <div style="flex:1;overflow:auto;padding:16px 20px 40px;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-content:start">
+            <sc-for list="{{ applicants }}" as="a" hint-placeholder-count="6">
+              <div onClick="{{ a.open }}" style="cursor:pointer">
+                <div style="aspect-ratio:3/4;border-radius:14px;background:repeating-linear-gradient(135deg,#F1ECE5 0 8px,#E5DED3 8px 16px);position:relative;display:flex;align-items:flex-end;padding:8px">
+                  <span style="font:500 9px ui-monospace,monospace;color:#8A8078">{{ a.shot }}</span>
+                  <span style="position:absolute;top:8px;right:8px;font:600 10px Pretendard,sans-serif;color:{{ a.stFg }};background:{{ a.stBg }};padding:4px 7px;border-radius:6px">{{ a.status }}</span>
+                </div>
+                <div style="margin-top:8px;font:600 13.5px Pretendard,sans-serif">{{ a.name }}</div>
+                <div style="font:400 12px Pretendard,sans-serif;color:#9A9189">{{ a.meta }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        </sc-if>
+
+        <sc-if value="{{ dDetail }}" hint-placeholder-val="{{ false }}">
+        <div style="height:100%;background:#FBF9F6;display:flex;flex-direction:column">
+          <div style="padding:58px 20px 10px;display:flex;align-items:center;gap:12px">
+            <div onClick="{{ dBack }}" style="width:34px;height:34px;border-radius:17px;border:1px solid #E6DFD6;display:flex;align-items:center;justify-content:center;cursor:pointer;font:500 16px Pretendard,sans-serif">←</div>
+            <div style="flex:1;font:600 15px Pretendard,sans-serif">{{ applicant.name }}</div>
+            <div style="font:500 12px Pretendard,sans-serif;color:#9A9189">3/14</div>
+          </div>
+          <div style="flex:1;overflow:auto;padding:8px 20px 120px">
+            <div style="aspect-ratio:4/5;border-radius:22px;background:repeating-linear-gradient(135deg,#EAE3D9 0 9px,#DFD7CB 9px 18px);display:flex;align-items:flex-end;padding:12px">
+              <span style="font:500 10px ui-monospace,monospace;color:#7E756D;background:rgba(255,255,255,.85);padding:4px 7px;border-radius:5px">메인 · 정면 얼굴</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+              <sc-for list="{{ subShots }}" as="s" hint-placeholder-count="2">
+                <div style="aspect-ratio:1;border-radius:14px;background:repeating-linear-gradient(135deg,#F1ECE5 0 8px,#E5DED3 8px 16px);display:flex;align-items:flex-end;padding:8px">
+                  <span style="font:500 9.5px ui-monospace,monospace;color:#8A8078;background:rgba(255,255,255,.85);padding:3px 6px;border-radius:4px">{{ s }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:20px;background:#fff;border:1px solid #EDE7DE;border-radius:22px;padding:17px">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+                <sc-for list="{{ applicantSpecs }}" as="s" hint-placeholder-count="4">
+                  <div>
+                    <div style="font:500 11px Pretendard,sans-serif;color:#9A9189">{{ s.k }}</div>
+                    <div style="font:600 14px Pretendard,sans-serif;margin-top:3px">{{ s.v }}</div>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top:14px;border-top:1px solid #F1ECE5;padding-top:13px;font:400 13.5px/1.65 Pretendard,sans-serif;color:#3D3733">두피가 예민한 편이라 탈색은 1회만 가능해요. 평일 오후 3시 이후로 방문할 수 있습니다.</div>
+            </div>
+            <div style="margin-top:18px;display:flex;flex-direction:column;gap:9px">
+              <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #EDE7DE;border-radius:18px;padding:14px">
+                <div style="width:34px;height:34px;border-radius:10px;background:#FBE7CB"></div>
+                <div style="flex:1">
+                  <div style="font:600 13.5px Pretendard,sans-serif">@seo_yun.k</div>
+                  <div style="font:400 11.5px Pretendard,sans-serif;color:#9A9189">최근 게시물 3장 보기</div>
+                </div>
+                <div style="display:flex;gap:4px">
+                  <sc-for list="{{ embed }}" as="e" hint-placeholder-count="3">
+                    <div style="width:26px;height:26px;border-radius:6px;background:repeating-linear-gradient(135deg,#F1ECE5 0 5px,#E5DED3 5px 10px)"></div>
+                  </sc-for>
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #EDE7DE;border-radius:18px;padding:14px">
+                <div style="width:34px;height:34px;border-radius:10px;background:#F6EDD2"></div>
+                <div style="flex:1">
+                  <div style="font:600 13.5px Pretendard,sans-serif">오픈채팅으로 대화</div>
+                  <div style="font:400 11.5px Pretendard,sans-serif;color:#9A9189">open.kakao.com/o/sYun2f9</div>
+                </div>
+                <div style="font:600 12.5px Pretendard,sans-serif;color:#A0611F">열기</div>
+              </div>
+            </div>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;padding:14px 20px 30px;background:rgba(251,249,246,.94);backdrop-filter:blur(18px);border-top:1px solid #EDE7DE;display:flex;gap:10px">
+            <div onClick="{{ dBack }}" style="flex:1;height:54px;border-radius:18px;border:1px solid #E6DFD6;display:flex;align-items:center;justify-content:center;font:600 15px Pretendard,sans-serif;color:#57504A;cursor:pointer">보류</div>
+            <div onClick="{{ dAccept }}" style="flex:1.4;height:54px;border-radius:18px;background:#E0A96D;color:#2A2118;display:flex;align-items:center;justify-content:center;font:700 15px Pretendard,sans-serif;cursor:pointer">{{ dAcceptLabel }}</div>
+          </div>
+        </div>
+        </sc-if>
+      </x-import>
+    </div>
+  </div>
+
+  <p style="margin:26px 0 0;font:12px/1.6 Pretendard,sans-serif;color:rgba(28,25,23,.5)">다음에 해볼 것: "<a href="#1a" style="text-decoration:none">1a</a> 피드를 사진 그리드로" · "네일 버전 화면도 보여줘" · "지원서 업로드 UX 변형 3개"</p>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1000,&quot;height&quot;:1100}}">
+const ACC = '#E0A96D';
+const POSTS = [
+  { id:0, cat:'헤어', title:'레이어드 펌 모델 구해요', name:'하나', salon:'라온헤어 · 강남', who:'하나 디자이너 · 라온헤어 강남', reward:'무료 + 재료비 5,000원', dur:'2시간 30분', when:'9/14–9/20', insta:'hana_hair.log', kakao:'hanaPerm', feedCount:'412', shot:'모델 결과컷 · 3:4' },
+  { id:1, cat:'네일', title:'가을 시럽 젤네일 모델', name:'지은', salon:'스튜디오 진 · 홍대', who:'지은 디자이너 · 스튜디오 진 홍대', reward:'무료', dur:'1시간 30분', when:'9/12–9/17', insta:'jin.nail.studio', kakao:'jinSyrup', feedCount:'1,204', shot:'손등 결과컷 · 3:4' },
+  { id:2, cat:'헤어', title:'밝은 애쉬 탈색 모델 (2회)', name:'태오', salon:'세컨드플로어 · 성수', who:'태오 디자이너 · 세컨드플로어 성수', reward:'페이 20,000원', dur:'4시간', when:'9/18–9/21', insta:'taeo.bleach', kakao:'taeoAsh', feedCount:'860', shot:'모델 결과컷 · 3:4' },
+  { id:3, cat:'네일', title:'프렌치 익스텐션 모델', name:'소이', salon:'네일바이소이 · 잠실', who:'소이 디자이너 · 네일바이소이 잠실', reward:'무료 + 제거비 지원', dur:'2시간', when:'9/15–9/19', insta:'nail.by.soy', kakao:'soyFrench', feedCount:'233', shot:'손등 결과컷 · 3:4' },
+];
+const REQS = {
+  '헤어': ['어깨 아래 길이, 최근 6개월 내 펌 이력 없음','두피 트러블이 없는 분','시술 후 결과 사진 촬영 및 SNS 게시 동의','평일 오후 2시–6시 방문 가능한 분'],
+  '네일': ['자연 손톱 길이 3mm 이상','최근 2주 내 연장·젤 제거 완료','손 사진 촬영 및 SNS 게시 동의','평일 낮 방문 가능한 분'],
+};
+const COND = [
+  { key:'len', label:'현재 상태', opts:['단발','어깨 아래','허리 길이','짧은 손톱','긴 손톱'] },
+  { key:'hist', label:'최근 시술 이력', opts:['없음','염색 3개월 내','탈색 이력 있음','펌 이력 있음'] },
+  { key:'time', label:'가능한 시간', opts:['평일 오전','평일 오후','주말 오전','주말 오후'] },
+];
+const APPLICANTS = [
+  { name:'김서윤', meta:'26 · 어깨 아래', status:'신규', shot:'정면 얼굴' },
+  { name:'이하람', meta:'23 · 단발', status:'신규', shot:'정면 얼굴' },
+  { name:'박민지', meta:'29 · 허리 길이', status:'검토', shot:'정면 얼굴' },
+  { name:'정유나', meta:'21 · 어깨 아래', status:'검토', shot:'정면 얼굴' },
+  { name:'최다은', meta:'27 · 단발', status:'보류', shot:'정면 얼굴' },
+  { name:'한지수', meta:'24 · 어깨 아래', status:'신규', shot:'정면 얼굴' },
+];
+
+class Component extends DCLogic {
+  state = { mScreen:'feed', post:0, step:1, tab:'전체', photos:[false,false,false], cond:{}, dScreen:'list', dTab:'전체', dApp:0, accepted:false };
+
+  pickFile(i) {
+    const el = document.createElement('input');
+    el.type = 'file'; el.accept = 'image/*';
+    el.onchange = () => {
+      const file = el.files && el.files[0];
+      if (!file) return;
+      const r = new FileReader();
+      r.onload = () => this.setState(p => { const n = [...p.photos]; n[i] = r.result; return { photos:n }; });
+      r.readAsDataURL(file);
+    };
+    el.click();
+  }
+
+  chip(on) {
+    return on
+      ? { bg:'#1C1917', fg:'#fff', bd:'#1C1917' }
+      : { bg:'transparent', fg:'#6B635C', bd:'#E0D9CF' };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const post = POSTS[s.post];
+    const isNail = post.cat === '네일';
+    const filled = s.photos.filter(Boolean).length;
+    const slotDefs = [
+      { title: isNail ? '메인 · 손등 사진' : '메인 · 정면 얼굴 사진', hint: isNail ? '손톱이 전부 보이도록 손등이 위로. 자연광 권장' : '앞머리를 넘기고 정면, 얼굴 전체가 보이게' },
+      { title:'추가 1 · 지금 상태', hint: isNail ? '현재 손톱 길이와 컬러가 보이는 사진' : '오늘 머리 상태 그대로 (측면 또는 뒷모습)' },
+      { title:'추가 2 · 희망 스타일', hint:'원하는 결과물 레퍼런스 1장' },
+    ];
+    const slots = slotDefs.map((d, i) => {
+      const on = s.photos[i];
+      return { ...d, size: i === 0 ? '86px' : '66px',
+        fill: on ? `center/cover no-repeat url(${on})` : '#F5F1EA',
+        mark: on ? '' : '+', bs: on ? 'solid' : 'dashed', bd: on ? '#EDE7DE' : '#DFD6CA',
+        state: on ? '첨부됨 · 탭하면 교체' : '탭해서 사진 첨부', stFg: on ? '#A0611F' : '#7C736B',
+        toggle: () => this.pickFile(i) };
+    });
+
+    const tabs = ['전체','헤어','네일'].map(t => ({ label:t, ...this.chip(s.tab === t), pick: () => this.setState({ tab:t }) }));
+    const dTabs = ['전체','신규','검토'].map(t => ({ label:t, ...this.chip(s.dTab === t), pick: () => this.setState({ dTab:t }) }));
+    const posts = POSTS.filter(p => s.tab === '전체' || p.cat === s.tab)
+      .map(p => ({ ...p, open: () => this.setState({ mScreen:'detail', post:p.id }) }));
+
+    const condGroups = COND.map(g => ({ label:g.label, opts: g.opts.map(o => ({
+      label:o, ...this.chip(s.cond[g.key] === o),
+      pick: () => this.setState(pv => ({ cond: { ...pv.cond, [g.key]:o } })) })) }));
+
+    const canNext = s.step !== 1 || filled === 3;
+    const applicants = APPLICANTS
+      .filter(a => s.dTab === '전체' || a.status === s.dTab)
+      .map((a, i) => ({ ...a,
+        stBg: a.status === '신규' ? '#C4832F' : a.status === '검토' ? '#1C1917' : 'rgba(255,255,255,.9)',
+        stFg: a.status === '검토' ? '#fff' : '#8A8078',
+        open: () => this.setState({ dScreen:'detail', dApp:i }) }));
+
+    return {
+      mFeed: s.mScreen === 'feed', mDetail: s.mScreen === 'detail', mApply: s.mScreen === 'apply', mDone: s.mScreen === 'done',
+      tabs, posts, post,
+      navItems: ['홈','지원현황','채팅','프로필'].map((l, i) => ({ label:l, dot: i === 0 ? ACC : '#DDD5CB', fg: i === 0 ? '#1C1917' : '#A79F97' })),
+      specs: [ { k:'보상', v:post.reward }, { k:'소요 시간', v:post.dur }, { k:'가능 일정', v:post.when }, { k:'위치', v:post.salon.split(' · ')[1] } ],
+      reqs: REQS[post.cat],
+      folio: ['결과컷 1','결과컷 2','시술 과정'],
+      backFeed: () => this.setState({ mScreen:'feed', step:1, photos:[false,false,false] }),
+      startApply: () => this.setState({ mScreen:'apply', step:1 }),
+      step: s.step, step1: s.step === 1, step2: s.step === 2, step3: s.step === 3,
+      stepLabel: ['사진 3장','내 조건','연결 · 확인'][s.step - 1],
+      stepBars: [1,2,3].map(n => ({ bg: n <= s.step ? ACC : '#E6DFD6' })),
+      shotGuide: isNail ? '네일 모집은 손등 사진이 메인입니다. 세 장 모두 올려야 지원할 수 있어요.' : '헤어 모집은 정면 얼굴 사진이 메인입니다. 세 장 모두 올려야 지원할 수 있어요.',
+      slots, condGroups,
+      embed: [1,2,3],
+      summary: [ { k:'지원 모집', v:post.title }, { k:'사진', v:'메인 1장 · 추가 2장' }, { k:'현재 상태', v:s.cond.len || '어깨 아래' }, { k:'가능 시간', v:s.cond.time || '평일 오후' } ],
+      nextLabel: s.step === 3 ? '지원서 보내기' : (s.step === 1 && !canNext ? `사진 ${filled}/3장 · 모두 올려주세요` : '다음'),
+      nextBg: canNext ? ACC : '#E6DFD6', nextFg: canNext ? '#2A2118' : '#A79F97',
+      applyNext: () => { if (!canNext) return; this.setState(p => p.step === 3 ? { mScreen:'done' } : { step:p.step + 1 }); },
+      applyBack: () => this.setState(p => p.step === 1 ? { mScreen:'detail' } : { step:p.step - 1 }),
+
+      dList: s.dScreen === 'list', dDetail: s.dScreen === 'detail', dTabs, applicants,
+      applicant: APPLICANTS[s.dApp] || APPLICANTS[0],
+      subShots: ['추가 1 · 지금 상태','추가 2 · 희망 스타일'],
+      applicantSpecs: [ { k:'나이', v:'26' }, { k:'현재 상태', v:'어깨 아래 · 시술 이력 없음' }, { k:'가능 시간', v:'평일 오후' }, { k:'지역', v:'강남 · 도보 10분' } ],
+      dAcceptLabel: s.accepted ? '수락됨 · 채팅 열기' : '수락하고 연락하기',
+      dAccept: () => this.setState({ accepted:true }),
+      dBack: () => this.setState({ dScreen:'list', accepted:false }),
+    };
+  }
+}
+
+</script>
+</body>
+</html>

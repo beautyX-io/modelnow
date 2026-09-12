@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // 디자인 핸드오프 번들 — 읽기용 레퍼런스라 린트 대상이 아니다
+    "Hair and nail model matching app/**",
   ]),
 ]);
 
