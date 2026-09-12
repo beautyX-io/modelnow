@@ -5,6 +5,7 @@ import ApplyScreen from "@/components/model/ApplyScreen";
 import DoneScreen from "@/components/model/DoneScreen";
 import FeedScreen from "@/components/model/FeedScreen";
 import PostDetailScreen from "@/components/model/PostDetailScreen";
+import type { ContactInfo } from "@/lib/contact";
 import { CURRENT_USER, POSTS } from "@/lib/mock-data";
 import { EMPTY_PHOTOS } from "@/lib/photo-slots";
 import type {
@@ -19,7 +20,15 @@ import { openChatUrl } from "@/lib/validation";
 
 type ModelScreen = "feed" | "detail" | "apply" | "done";
 
-const INITIAL_KAKAO_URL = openChatUrl(CURRENT_USER.kakao.slug);
+const EMPTY_CONDITIONS: Conditions = { length: [], history: [], availability: [] };
+
+/** 로그인 사용자의 프로필에서 가져온 기본 연락 방법 */
+const INITIAL_CONTACT: ContactInfo = {
+  channels: ["instagram", "kakao"],
+  instagram: CURRENT_USER.instagram.handle,
+  phone: "",
+  kakaoUrl: openChatUrl(CURRENT_USER.kakao.slug),
+};
 
 /**
  * 모델(지원자) 측 플로우: feed → detail → apply(1→2→3) → done.
@@ -32,12 +41,9 @@ export default function ModelFlow() {
 
   const [step, setStep] = useState<ApplyStep>(1);
   const [photos, setPhotos] = useState<Photos>(EMPTY_PHOTOS);
-  const [conditions, setConditions] = useState<Conditions>({});
+  const [conditions, setConditions] = useState<Conditions>(EMPTY_CONDITIONS);
   const [note, setNote] = useState("");
-  const [instagramHandle, setInstagramHandle] = useState(
-    CURRENT_USER.instagram.handle,
-  );
-  const [kakaoUrl, setKakaoUrl] = useState(INITIAL_KAKAO_URL);
+  const [contact, setContact] = useState<ContactInfo>(INITIAL_CONTACT);
 
   const post = POSTS.find((p) => p.id === postId) ?? POSTS[0];
 
@@ -45,10 +51,9 @@ export default function ModelFlow() {
   function resetApplication() {
     setStep(1);
     setPhotos(EMPTY_PHOTOS);
-    setConditions({});
+    setConditions(EMPTY_CONDITIONS);
     setNote("");
-    setInstagramHandle(CURRENT_USER.instagram.handle);
-    setKakaoUrl(INITIAL_KAKAO_URL);
+    setContact(INITIAL_CONTACT);
   }
 
   function handlePhotoChange(key: PhotoKey, dataUrl: string) {
@@ -56,7 +61,15 @@ export default function ModelFlow() {
   }
 
   function handleConditionChange(key: ConditionKey, value: string) {
-    setConditions((prev) => ({ ...prev, [key]: value }));
+    setConditions((prev) => {
+      const picked = prev[key];
+      return {
+        ...prev,
+        [key]: picked.includes(value)
+          ? picked.filter((v) => v !== value)
+          : [...picked, value],
+      };
+    });
   }
 
   function handleApplyNext() {
@@ -101,13 +114,11 @@ export default function ModelFlow() {
         photos={photos}
         conditions={conditions}
         note={note}
-        instagramHandle={instagramHandle}
-        kakaoUrl={kakaoUrl}
+        contact={contact}
         onPhotoChange={handlePhotoChange}
         onConditionChange={handleConditionChange}
         onNoteChange={setNote}
-        onInstagramHandleChange={setInstagramHandle}
-        onKakaoUrlChange={setKakaoUrl}
+        onContactChange={setContact}
         onBack={handleApplyBack}
         onNext={handleApplyNext}
       />

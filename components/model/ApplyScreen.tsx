@@ -5,6 +5,7 @@ import StepConnect from "@/components/model/StepConnect";
 import StepPhotos from "@/components/model/StepPhotos";
 import BottomBar from "@/components/ui/BottomBar";
 import ScreenHeader from "@/components/ui/ScreenHeader";
+import { hasReadyContact, type ContactInfo } from "@/lib/contact";
 import { countPhotos } from "@/lib/photo-slots";
 import type {
   ApplyStep,
@@ -23,13 +24,11 @@ interface ApplyScreenProps {
   photos: Photos;
   conditions: Conditions;
   note: string;
-  instagramHandle: string;
-  kakaoUrl: string;
+  contact: ContactInfo;
   onPhotoChange: (key: PhotoKey, dataUrl: string) => void;
   onConditionChange: (key: ConditionKey, value: string) => void;
   onNoteChange: (note: string) => void;
-  onInstagramHandleChange: (handle: string) => void;
-  onKakaoUrlChange: (url: string) => void;
+  onContactChange: (contact: ContactInfo) => void;
   onBack: () => void;
   onNext: () => void;
 }
@@ -41,23 +40,27 @@ export default function ApplyScreen({
   photos,
   conditions,
   note,
-  instagramHandle,
-  kakaoUrl,
+  contact,
   onPhotoChange,
   onConditionChange,
   onNoteChange,
-  onInstagramHandleChange,
-  onKakaoUrlChange,
+  onContactChange,
   onBack,
   onNext,
 }: ApplyScreenProps) {
   const filled = countPhotos(photos);
-  // 1단계 게이트: 사진 3장을 다 올려야 다음으로 넘어간다
-  const canNext = step !== 1 || filled === 3;
+  const contactReady = hasReadyContact(contact);
+  // 1단계는 사진 3장, 3단계는 연락 방법이 하나는 닿아야 넘어간다
+  const canNext =
+    step === 1 ? filled === 3 : step === 3 ? contactReady : true;
 
   const nextLabel =
     step === 3
-      ? "지원서 보내기"
+      ? contactReady
+        ? "지원서 보내기"
+        : contact.channels.length === 0
+          ? "연락 가능한 방법을 골라주세요"
+          : "고른 연락 방법의 정보를 채워주세요"
       : canNext
         ? "다음"
         : `사진 ${filled}/3장 · 모두 올려주세요`;
@@ -105,10 +108,8 @@ export default function ApplyScreen({
           <StepConnect
             post={post}
             conditions={conditions}
-            instagramHandle={instagramHandle}
-            onInstagramHandleChange={onInstagramHandleChange}
-            kakaoUrl={kakaoUrl}
-            onKakaoUrlChange={onKakaoUrlChange}
+            contact={contact}
+            onContactChange={onContactChange}
           />
         )}
       </div>

@@ -11,7 +11,7 @@ interface StepConditionsProps {
   onNoteChange: (note: string) => void;
 }
 
-/** A3 · 2단계. 내 조건 (그룹별 단일 선택 + 자유 서술) */
+/** A3 · 2단계. 내 조건 (그룹별 중복 선택 + 자유 서술) */
 export default function StepConditions({
   conditions,
   onConditionChange,
@@ -23,13 +23,17 @@ export default function StepConditions({
       {CONDITION_GROUPS.map((group) => (
         <fieldset key={group.key} className="mb-[22px]">
           <legend className="text-section font-semibold">{group.label}</legend>
+          <p className="mt-[6px] text-note leading-[1.6] text-ink-soft">
+            해당하는 것을 모두 골라주세요.
+          </p>
           <div className="mt-[10px] flex flex-wrap gap-[7px]">
             {group.options.map((option) => (
               <Chip
                 key={option}
                 label={option}
                 size="option"
-                selected={conditions[group.key] === option}
+                multi
+                selected={conditions[group.key].includes(option)}
                 onSelect={() => onConditionChange(group.key, option)}
               />
             ))}

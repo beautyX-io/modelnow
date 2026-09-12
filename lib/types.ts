@@ -55,7 +55,8 @@ export interface ConditionGroup {
   options: string[];
 }
 
-export type Conditions = Partial<Record<ConditionKey, string>>;
+/** 그룹별로 여러 개 고를 수 있다 */
+export type Conditions = Record<ConditionKey, string[]>;
 
 /** 지원 사진 3장. 순서가 곧 슬롯 순서다. */
 export type PhotoKey = "main" | "current" | "desired";
@@ -64,6 +65,8 @@ export interface PhotoSlotDef {
   key: PhotoKey;
   title: string;
   hint: string;
+  /** 사진 위에 얹는 짧은 주제 표시 (예: 희망 스타일) */
+  badge: string;
   /** 메인 슬롯만 썸네일이 크다 */
   thumbSize: number;
 }

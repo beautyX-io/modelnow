@@ -36,6 +36,15 @@ export async function fileToDataUrl(file: File): Promise<string> {
   }
 }
 
+/**
+ * fileToDataUrl 이 만든 dataURL 을 Supabase Storage 업로드용 Blob 으로 되돌린다.
+ * 리사이즈는 이미 dataURL 을 만들 때 끝났으니 여기서는 형식만 바꾼다.
+ */
+export async function dataUrlToBlob(dataUrl: string): Promise<Blob> {
+  const res = await fetch(dataUrl);
+  return res.blob();
+}
+
 function readAsDataUrl(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();

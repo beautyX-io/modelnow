@@ -32,7 +32,7 @@ export default function FeedScreen({
               type="button"
               className="flex h-[34px] w-[34px] items-center justify-center rounded-full border border-line-strong text-[12px] font-medium text-ink-soft"
             >
-              서울
+              광주
             </button>
             <button
               type="button"

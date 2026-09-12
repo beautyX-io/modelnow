@@ -59,3 +59,20 @@ export function ScissorsIcon(props: IconProps) {
     </Icon>
   );
 }
+
+export function SearchIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="10.8" cy="10.8" r="6.3" />
+      <path d="M19.5 19.5l-4.3-4.3" />
+    </Icon>
+  );
+}
+
+export function CloseIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M5.5 5.5l13 13M18.5 5.5l-13 13" />
+    </Icon>
+  );
+}

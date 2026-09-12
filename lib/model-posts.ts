@@ -1,8 +1,13 @@
+import type { ContactInfo } from "./contact";
+import { supabase } from "./supabase/client";
 import type { Category, Photos } from "./types";
 
 /**
  * 모델 지원 게시물 — 일반인이 직접 올리는 글.
  * 디자이너가 올리는 구인 공고(`Post`)와 방향이 반대다.
+ *
+ * Supabase `posts` 테이블이 원본이다(schema: `supabase/schema.sql`).
+ * 테이블 컬럼은 snake_case 라 rowToPost/postToInsertRow 가 이 모양으로 바꿔준다.
  */
 export interface ModelPost {
   id: string;
@@ -11,33 +16,92 @@ export interface ModelPost {
   title: string;
   body: string;
   photos: Photos;
-  region: string;
-  availability: string;
+  /** 시술희망지역 — 여러 곳을 고를 수 있다 */
+  regions: string[];
+  /** 가능한 시간 */
+  availabilities: string[];
   /** 현재 상태 (머리 길이 / 손톱 상태) */
-  condition: string;
-  instagram: string;
-  kakaoUrl: string;
-  /** 예시 게시물 표시 — 실데이터가 들어오면 사라진다 */
-  sample?: boolean;
+  conditions: string[];
+  /** 지원자가 고른 연락 방법과 값 */
+  contact: ContactInfo;
+  /** 작성자가 직접 입력한 본인 이름. 게시물에는 성만 가리고 보인다(maskName) */
+  name: string;
+  /** 시술 전후 촬영·마케팅 활용(초상권) 동의 여부 — 동의해야 글이 올라간다 */
+  agreedToPortraitUse: boolean;
+  /**
+   * 삭제용 4자리 비밀번호의 해시. 회원가입이 없어 이것이 유일한 본인 확인이다.
+   * null 이면 비밀번호 없이 삭제되는 예전/샘플 글이라는 뜻이다.
+   */
+  pinHash: string | null;
 }
 
-export type NewModelPost = Omit<ModelPost, "id" | "createdAt" | "sample">;
+/**
+ * 이름 앞글자만 가린다. "김민서" → "*민서".
+ * 게시물 목록·상세 어디서든 작성자 이름은 이 함수를 거쳐야 한다.
+ */
+export function maskName(name: string): string {
+  const trimmed = name.trim();
+  return trimmed ? `*${trimmed.slice(1)}` : "";
+}
 
+export type NewModelPost = Omit<ModelPost, "id" | "createdAt">;
+
+/** 서비스 지역 — 지금은 광주광역시만 연다 */
 export const REGIONS = [
-  "서울 강남",
-  "서울 홍대",
-  "서울 성수",
-  "서울 잠실",
-  "경기",
-  "인천",
+  "광주 광산구",
+  "광주 동구",
+  "광주 북구",
+  "광주 서구",
 ] as const;
 
+/** 어느 구든 갈 수 있다는 뜻. 구를 하나라도 고르면 풀린다. */
+export const REGION_ANY = "광주 전체";
+
+/** 글쓰기의 시술희망지역 선택지 */
+export const REGION_OPTIONS: string[] = [REGION_ANY, ...REGIONS];
+
+/** 글의 지역이 지역 칩 하나에 걸리는지. '광주 전체'는 모든 구에 걸린다. */
+export function matchesRegion(post: ModelPost, region: string): boolean {
+  if (region === "전체") return true;
+  return post.regions.includes(region) || post.regions.includes(REGION_ANY);
+}
+
+/**
+ * 검색창 필터. 제목·소개·분류·시술희망지역·가능한 시간·현재 상태를 모두 뒤진다.
+ * 회원가입 없는 사이트라 검색이 사실상 유일한 탐색 수단이라, 좁게 잡지 않는다.
+ */
+export function matchesQuery(post: ModelPost, query: string): boolean {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+
+  const haystack = [
+    post.title,
+    post.body,
+    post.category,
+    ...post.regions,
+    ...post.conditions,
+    ...post.availabilities.map(shortAvailability),
+  ]
+    .join(" ")
+    .toLowerCase();
+
+  return haystack.includes(q);
+}
+
+/** 가능한 시간 — 시간대까지 붙여 디자이너가 바로 일정을 잡을 수 있게 한다 */
 export const AVAILABILITIES = [
-  "평일 오전",
-  "평일 오후",
-  "주말 오전",
-  "주말 오후",
+  "평일 오전 (09시~12시)",
+  "평일 오후 (12시~18시)",
+  "평일 저녁 (18시~21시)",
+  "주말 오전 (09시~12시)",
+  "주말 오후 (12시~18시)",
+  "주말 저녁 (18시~21시)",
 ] as const;
+
+/** 목록 카드처럼 좁은 자리에서는 시간대를 떼고 보여준다 */
+export function shortAvailability(value: string): string {
+  return value.replace(/\s*\(.*\)$/, "");
+}
 
 export const CONDITIONS: Record<Category, string[]> = {
   헤어: ["단발", "어깨 아래", "허리 길이", "숏컷"],
@@ -47,171 +111,116 @@ export const CONDITIONS: Record<Category, string[]> = {
 export const SORTS = ["최신순", "오래된순"] as const;
 export type Sort = (typeof SORTS)[number];
 
-const STORAGE_KEY = "modelnow.model-posts.v1";
-
-const HOUR = 60 * 60 * 1000;
-const DAY = 24 * HOUR;
-
-const emptyPhotos: Photos = { main: null, current: null, desired: null };
-
-/** 게시판이 비어 보이지 않도록 첫 실행 때만 넣는 예시 글 */
-function seedPosts(now: number): ModelPost[] {
-  return [
-    {
-      id: "sample-1",
-      createdAt: now - 2 * HOUR,
-      category: "헤어",
-      title: "레이어드 펌 받아보고 싶어요",
-      body: "어깨 아래 길이고 최근 6개월 안에 펌이나 염색을 한 적이 없어요. 결과 사진 촬영과 SNS 게시 모두 괜찮습니다. 평일 오후에 강남 쪽으로 방문할 수 있어요.",
-      photos: emptyPhotos,
-      region: "서울 강남",
-      availability: "평일 오후",
-      condition: "어깨 아래",
-      instagram: "seo_yun.k",
-      kakaoUrl: "open.kakao.com/o/sYun2f9",
-      sample: true,
-    },
-    {
-      id: "sample-2",
-      createdAt: now - 9 * HOUR,
-      category: "네일",
-      title: "가을 컬러 젤네일 모델 지원합니다",
-      body: "손톱 길이는 3mm 정도이고 연장은 2주 전에 제거했습니다. 손 사진 촬영 괜찮고 홍대 근처면 언제든 갈 수 있어요.",
-      photos: emptyPhotos,
-      region: "서울 홍대",
-      availability: "주말 오후",
-      condition: "짧은 손톱",
-      instagram: "haram.dy",
-      kakaoUrl: "open.kakao.com/o/haram7kd",
-      sample: true,
-    },
-    {
-      id: "sample-3",
-      createdAt: now - DAY - 3 * HOUR,
-      category: "헤어",
-      title: "탈색 모델 해보고 싶습니다 (2회까지 가능)",
-      body: "작년에 한 번 탈색한 이력이 있고 지금은 많이 자란 상태예요. 두피는 예민한 편이라 상담 후 진행하고 싶습니다. 성수 쪽 주말 오전이 편해요.",
-      photos: emptyPhotos,
-      region: "서울 성수",
-      availability: "주말 오전",
-      condition: "허리 길이",
-      instagram: "minji.log",
-      kakaoUrl: "open.kakao.com/o/mjPark22",
-      sample: true,
-    },
-    {
-      id: "sample-4",
-      createdAt: now - 5 * DAY,
-      category: "네일",
-      title: "프렌치 익스텐션 연습 모델 찾으시면 연락 주세요",
-      body: "손이 작은 편이고 자연 손톱 상태는 좋습니다. 잠실 근처 평일 오전 시간대에 가능해요. 제거까지 같이 부탁드릴 수 있으면 좋겠습니다.",
-      photos: emptyPhotos,
-      region: "서울 잠실",
-      availability: "평일 오전",
-      condition: "보통 길이",
-      instagram: "yuna_ju",
-      kakaoUrl: "open.kakao.com/o/yunaJ0",
-      sample: true,
-    },
-  ];
-}
-
 /* ---------------------------------------------------------------------------
-   저장소. 지금은 브라우저 localStorage 가 원본이고, 메모리 캐시를 하나 두고
-   구독자에게 변경을 알린다(useSyncExternalStore 용). 백엔드가 붙으면
-   readStorage / writeStorage 만 API 호출로 바꾸면 된다.
+   Supabase 매핑. 테이블 컬럼(snake_case, jsonb) ↔ 화면이 쓰는 ModelPost.
 --------------------------------------------------------------------------- */
 
-let cache: ModelPost[] | null = null;
-const listeners = new Set<() => void>();
-
-/** 서버 렌더링 때 돌려줄 고정 값 — 매번 같은 참조여야 한다 */
-const SERVER_SNAPSHOT: ModelPost[] = [];
-
-function readStorage(): ModelPost[] | null {
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
-    const parsed: unknown = JSON.parse(raw);
-    return Array.isArray(parsed) ? (parsed as ModelPost[]) : null;
-  } catch {
-    return null;
-  }
+interface PostRow {
+  id: string;
+  created_at: string;
+  category: Category;
+  title: string;
+  body: string;
+  photo_main: string | null;
+  photo_current: string | null;
+  photo_desired: string | null;
+  regions: string[];
+  availabilities: string[];
+  conditions: string[];
+  contact: ContactInfo;
+  name: string;
+  agreed_to_portrait_use: boolean;
+  pin_hash: string | null;
 }
 
-function writeStorage(posts: ModelPost[]) {
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-}
+const POST_COLUMNS =
+  "id, created_at, category, title, body, photo_main, photo_current, photo_desired, regions, availabilities, conditions, contact, name, agreed_to_portrait_use, pin_hash";
 
-function emit() {
-  for (const listener of listeners) listener();
-}
-
-export function subscribe(listener: () => void): () => void {
-  listeners.add(listener);
-  return () => {
-    listeners.delete(listener);
+function rowToPost(row: PostRow): ModelPost {
+  return {
+    id: row.id,
+    createdAt: new Date(row.created_at).getTime(),
+    category: row.category,
+    title: row.title,
+    body: row.body,
+    photos: {
+      main: row.photo_main,
+      current: row.photo_current,
+      desired: row.photo_desired,
+    },
+    regions: row.regions ?? [],
+    availabilities: row.availabilities ?? [],
+    conditions: row.conditions ?? [],
+    contact: row.contact,
+    name: row.name,
+    agreedToPortraitUse: row.agreed_to_portrait_use,
+    pinHash: row.pin_hash,
   };
 }
 
-/** 클라이언트 스냅샷. 처음 읽을 때 예시 글을 넣고 시작한다. */
-export function getSnapshot(): ModelPost[] {
-  if (cache) return cache;
-
-  const stored = readStorage();
-  if (stored) {
-    cache = stored;
-    return cache;
-  }
-
-  const seeded = seedPosts(Date.now());
-  try {
-    writeStorage(seeded);
-  } catch {
-    // 저장에 실패해도 화면은 예시 글로 띄운다
-  }
-  cache = seeded;
-  return cache;
-}
-
-export function getServerSnapshot(): ModelPost[] {
-  return SERVER_SNAPSHOT;
-}
-
-export function getPost(id: string): ModelPost | undefined {
-  return getSnapshot().find((post) => post.id === id);
-}
-
-/** 새 게시물을 맨 앞에 넣고 저장한다. 용량 초과 시 에러를 던진다. */
-export function createPost(input: NewModelPost): ModelPost {
-  const post: ModelPost = {
-    ...input,
-    id: `p-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
-    createdAt: Date.now(),
+function postToInsertRow(input: NewModelPost) {
+  return {
+    category: input.category,
+    title: input.title,
+    body: input.body,
+    photo_main: input.photos.main,
+    photo_current: input.photos.current,
+    photo_desired: input.photos.desired,
+    regions: input.regions,
+    availabilities: input.availabilities,
+    conditions: input.conditions,
+    contact: input.contact,
+    name: input.name,
+    agreed_to_portrait_use: input.agreedToPortraitUse,
+    pin_hash: input.pinHash,
   };
-
-  const next = [post, ...getSnapshot()];
-  try {
-    writeStorage(next);
-  } catch {
-    throw new Error(
-      "저장 공간이 가득 찼어요. 사진 용량이 크거나 글이 많이 쌓였을 수 있습니다.",
-    );
-  }
-  cache = next;
-  emit();
-  return post;
 }
 
-export function deletePost(id: string) {
-  const next = getSnapshot().filter((post) => post.id !== id);
-  writeStorage(next);
-  cache = next;
-  emit();
+/** 게시판 전체 목록. 최신순으로 받아서, 정렬은 화면에서 다시 한다. */
+export async function listPosts(): Promise<ModelPost[]> {
+  const { data, error } = await supabase
+    .from("posts")
+    .select(POST_COLUMNS)
+    .order("created_at", { ascending: false })
+    .returns<PostRow[]>();
+
+  if (error) throw new Error(`게시물을 불러오지 못했어요. (${error.message})`);
+  return (data ?? []).map(rowToPost);
+}
+
+/** 새 게시물을 올린다. 사진은 호출하는 쪽에서 먼저 Storage 에 올려 URL로 넘겨야 한다. */
+export async function createPost(input: NewModelPost): Promise<ModelPost> {
+  const { data, error } = await supabase
+    .from("posts")
+    .insert(postToInsertRow(input))
+    .select(POST_COLUMNS)
+    .single<PostRow>();
+
+  if (error) throw new Error(`게시물을 올리지 못했어요. (${error.message})`);
+  return rowToPost(data);
+}
+
+/**
+ * 비밀번호가 맞을 때만 지운다. 실제 비교는 `delete_post_with_pin` 데이터베이스
+ * 함수가 서버에서 하므로, 이 클라이언트는 맞는지 틀린지 알 방법이 없다 —
+ * 그래서 anon 키로도 다른 사람 글을 지울 수 없다. `pinHash` 가 없던 예전
+ * 글은 그 함수가 비밀번호 없이 지운다.
+ */
+export async function deletePostWithPin(id: string, pin: string): Promise<boolean> {
+  const { data, error } = await supabase.rpc("delete_post_with_pin", {
+    post_id: id,
+    pin,
+  });
+
+  if (error) throw new Error(`게시물을 지우지 못했어요. (${error.message})`);
+  return Boolean(data);
 }
 
 /** 목록을 날짜 구간으로 나눈다 — 게시판에서 글을 구분해 보여주기 위한 것 */
 export type DateBucket = "오늘" | "어제" | "이번 주" | "이전";
+
+const HOUR = 60 * 60 * 1000;
+const DAY = 24 * HOUR;
 
 export function bucketOf(createdAt: number, now = Date.now()): DateBucket {
   const startOfToday = new Date(now).setHours(0, 0, 0, 0);

@@ -15,7 +15,7 @@ const DESIGNERS: Record<string, Designer> = {
   hana: {
     name: "하나",
     salon: "라온헤어",
-    area: "강남",
+    area: "광산구",
     instagram: {
       handle: "hana_hair.log",
       postCount: "412",
@@ -27,7 +27,7 @@ const DESIGNERS: Record<string, Designer> = {
   jieun: {
     name: "지은",
     salon: "스튜디오 진",
-    area: "홍대",
+    area: "동구",
     instagram: {
       handle: "jin.nail.studio",
       postCount: "1,204",
@@ -39,7 +39,7 @@ const DESIGNERS: Record<string, Designer> = {
   taeo: {
     name: "태오",
     salon: "세컨드플로어",
-    area: "성수",
+    area: "북구",
     instagram: {
       handle: "taeo.bleach",
       postCount: "860",
@@ -51,7 +51,7 @@ const DESIGNERS: Record<string, Designer> = {
   soy: {
     name: "소이",
     salon: "네일바이소이",
-    area: "잠실",
+    area: "서구",
     instagram: {
       handle: "nail.by.soy",
       postCount: "233",
@@ -136,7 +136,14 @@ export const CONDITION_GROUPS: ConditionGroup[] = [
   {
     key: "availability",
     label: "가능한 시간",
-    options: ["평일 오전", "평일 오후", "주말 오전", "주말 오후"],
+    options: [
+      "평일 오전 (09시~12시)",
+      "평일 오후 (12시~18시)",
+      "평일 저녁 (18시~21시)",
+      "주말 오전 (09시~12시)",
+      "주말 오후 (12시~18시)",
+      "주말 저녁 (18시~21시)",
+    ],
   },
 ];
 
@@ -155,8 +162,8 @@ export const CURRENT_DESIGNER = DESIGNERS.hana;
 
 const photoLabels = {
   main: "메인 · 정면 얼굴",
-  current: "추가 1 · 지금 상태",
-  desired: "추가 2 · 희망 스타일",
+  current: "지금 상태",
+  desired: "희망 스타일",
 };
 
 export const APPLICANTS: Applicant[] = [
@@ -166,8 +173,8 @@ export const APPLICANTS: Applicant[] = [
     age: 26,
     length: "어깨 아래",
     history: "시술 이력 없음",
-    availability: "평일 오후",
-    area: "강남 · 도보 10분",
+    availability: "평일 오후 (12시~18시)",
+    area: "광산구 · 도보 10분",
     note: "두피가 예민한 편이라 탈색은 1회만 가능해요. 평일 오후 3시 이후로 방문할 수 있습니다.",
     status: "신규",
     instagram: {
@@ -184,8 +191,8 @@ export const APPLICANTS: Applicant[] = [
     age: 23,
     length: "단발",
     history: "염색 3개월 내",
-    availability: "평일 오전",
-    area: "역삼 · 도보 15분",
+    availability: "평일 오전 (09시~12시)",
+    area: "광산구 · 도보 15분",
     note: "단발이라 레이어드가 잘 나올지 궁금해요. 오전 시간대가 가장 편합니다.",
     status: "신규",
     instagram: {
@@ -202,8 +209,8 @@ export const APPLICANTS: Applicant[] = [
     age: 29,
     length: "허리 길이",
     history: "펌 이력 있음",
-    availability: "주말 오후",
-    area: "선릉 · 버스 20분",
+    availability: "주말 오후 (12시~18시)",
+    area: "북구 · 버스 20분",
     note: "작년 가을에 펌을 한 번 했고 지금은 많이 풀렸어요. 주말만 시간이 납니다.",
     status: "검토",
     instagram: {
@@ -220,8 +227,8 @@ export const APPLICANTS: Applicant[] = [
     age: 21,
     length: "어깨 아래",
     history: "시술 이력 없음",
-    availability: "평일 오후",
-    area: "논현 · 도보 20분",
+    availability: "평일 오후 (12시~18시)",
+    area: "서구 · 도보 20분",
     note: "시술 이력이 전혀 없어서 머릿결은 좋은 편이에요. 결과컷 촬영 괜찮습니다.",
     status: "검토",
     instagram: {
@@ -238,8 +245,8 @@ export const APPLICANTS: Applicant[] = [
     age: 27,
     length: "단발",
     history: "탈색 이력 있음",
-    availability: "주말 오전",
-    area: "삼성 · 지하철 10분",
+    availability: "주말 오전 (09시~12시)",
+    area: "동구 · 버스 15분",
     note: "작년에 탈색을 두 번 했습니다. 손상 상태 보시고 판단해 주세요.",
     status: "보류",
     instagram: {
@@ -256,8 +263,8 @@ export const APPLICANTS: Applicant[] = [
     age: 24,
     length: "어깨 아래",
     history: "염색 3개월 내",
-    availability: "평일 오후",
-    area: "신사 · 도보 12분",
+    availability: "평일 오후 (12시~18시)",
+    area: "광산구 · 도보 12분",
     note: "3개월 전 갈색으로 염색했어요. 톤 다운도 괜찮습니다.",
     status: "신규",
     instagram: {

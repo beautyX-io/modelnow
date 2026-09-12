@@ -19,6 +19,8 @@ export default function PhotoSlot({ def, value, onChange }: PhotoSlotProps) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const filled = Boolean(value);
+  // 66px 썸네일에 들어가도록 "메인 · 정면 얼굴" 같은 긴 배지는 앞부분만 쓴다
+  const shortBadge = def.badge.split(" · ")[0];
 
   async function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
@@ -53,14 +55,20 @@ export default function PhotoSlot({ def, value, onChange }: PhotoSlotProps) {
         }`}
       >
         <div
-          className="flex flex-none items-center justify-center rounded-slot bg-surface-3 bg-cover bg-center bg-no-repeat text-[20px] font-medium text-slot-mark"
+          className="relative flex flex-none items-center justify-center rounded-slot bg-surface-3 bg-cover bg-center bg-no-repeat text-[20px] font-medium text-slot-mark"
           style={{
             width: def.thumbSize,
             height: def.thumbSize,
             backgroundImage: value ? `url(${value})` : undefined,
           }}
         >
-          {filled ? "" : "+"}
+          {filled ? (
+            <span className="pointer-events-none absolute right-[4px] top-[4px] rounded bg-ink/45 px-[4px] py-[2px] text-[9px] font-medium text-white/95 backdrop-blur-[2px]">
+              {shortBadge}
+            </span>
+          ) : (
+            "+"
+          )}
         </div>
         <div className="min-w-0 flex-1">
           <div className="text-section font-semibold">{def.title}</div>

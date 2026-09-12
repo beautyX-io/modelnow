@@ -3,7 +3,7 @@
 import InstagramCard from "@/components/connect/InstagramCard";
 import KakaoOpenChatCard from "@/components/connect/KakaoOpenChatCard";
 import BottomBar from "@/components/ui/BottomBar";
-import PhotoPlaceholder from "@/components/ui/PhotoPlaceholder";
+import PhotoFrame from "@/components/ui/PhotoFrame";
 import ScreenHeader from "@/components/ui/ScreenHeader";
 import type { Applicant } from "@/lib/types";
 import { openChatUrl } from "@/lib/validation";
@@ -49,22 +49,21 @@ export default function ApplicantDetailScreen({
       />
 
       <div className="flex-1 px-5 pb-[140px] pt-2">
-        <PhotoPlaceholder
-          label={applicant.photoLabels.main}
-          labelPill
+        <PhotoFrame
+          src={null}
+          badge={applicant.photoLabels.main}
           large
-          className="aspect-4/5 rounded-panel-lg p-3"
+          className="aspect-4/5 rounded-panel-lg"
         />
 
         <div className="mt-[10px] grid grid-cols-2 gap-[10px]">
           {[applicant.photoLabels.current, applicant.photoLabels.desired].map(
-            (label) => (
-              <PhotoPlaceholder
-                key={label}
-                label={label}
-                labelPill
-                labelClassName="text-[9.5px]"
-                className="aspect-square rounded-slot-lg p-2"
+            (badge) => (
+              <PhotoFrame
+                key={badge}
+                src={null}
+                badge={badge}
+                className="aspect-square rounded-slot-lg"
               />
             ),
           )}

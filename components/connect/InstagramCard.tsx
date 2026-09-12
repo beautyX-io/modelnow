@@ -53,18 +53,23 @@ export default function InstagramCard({
           )}
         </div>
 
-        <div className="mt-3 flex gap-[6px] border-t border-hairline pt-3">
-          {account.recentPosts.map((label) => (
-            <PhotoPlaceholder
-              key={label}
-              step={6}
-              className="aspect-square flex-1 rounded-[9px]"
-            />
-          ))}
-        </div>
-        <div className="mt-[9px] font-mono text-[11px] font-medium text-ink-faint">
-          미리보기 · 최근 게시물 3장 자동 임베드
-        </div>
+        {/* 계정이 연결되기 전에는 미리보기 자리를 만들지 않는다 */}
+        {account.recentPosts.length > 0 ? (
+          <>
+            <div className="mt-3 flex gap-[6px] border-t border-hairline pt-3">
+              {account.recentPosts.map((label) => (
+                <PhotoPlaceholder
+                  key={label}
+                  step={6}
+                  className="aspect-square flex-1 rounded-[9px]"
+                />
+              ))}
+            </div>
+            <div className="mt-[9px] font-mono text-[11px] font-medium text-ink-faint">
+              미리보기 · 최근 게시물 3장 자동 임베드
+            </div>
+          </>
+        ) : null}
       </div>
     );
   }

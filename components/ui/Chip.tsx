@@ -18,6 +18,8 @@ interface ChipProps {
   selected: boolean;
   onSelect: () => void;
   size?: ChipSize;
+  /** 여러 개를 동시에 고르는 칩. 선택되면 체크 표시가 붙는다 */
+  multi?: boolean;
 }
 
 /**
@@ -29,13 +31,14 @@ export default function Chip({
   selected,
   onSelect,
   size = "filter",
+  multi = false,
 }: ChipProps) {
   return (
     <button
       type="button"
       onClick={onSelect}
       aria-pressed={selected}
-      className={`cursor-pointer rounded-full transition-colors duration-150 ${
+      className={`inline-flex cursor-pointer items-center rounded-full transition-colors duration-150 ${
         SIZE_CLASS[size]
       } ${
         size === "quiet"
@@ -47,6 +50,11 @@ export default function Chip({
             : "border border-line-chip bg-transparent text-ink-chip"
       }`}
     >
+      {multi && selected ? (
+        <span aria-hidden className="mr-[5px] text-[11px]">
+          ✓
+        </span>
+      ) : null}
       {label}
     </button>
   );
