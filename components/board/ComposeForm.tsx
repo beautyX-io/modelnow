@@ -51,6 +51,17 @@ export default function ComposeForm() {
   const [saving, setSaving] = useState(false);
   const [uploadingPhotos, setUploadingPhotos] = useState(false);
 
+  const isNail = category === "네일";
+  const titlePlaceholder = isNail
+    ? "손톱 연장 시술 받아보고 싶어요"
+    : "레이어드 펌 받아보고 싶어요";
+  const introHint = isNail
+    ? "현재 손상태나 젤네일이 되어 있어 제거필요 여부, 물어뜯는손톱 등 현재 손에 대한 정보와 어떤 시술을 받으셔서 얼마나 된 상태인지를 알려주세요. 희망하시는 스타일에 대한 정보도 자세히 남겨주시면 작성하신 정보와 사진 등 확인 후 네일전문가가 문의를 드립니다."
+    : "펌, 염색 등 최근 1~2년 내에 시술받으신 이력정보를 자세히 남겨주세요. 최종 희망스타일이나 시술관련 내용을 남겨주시면 작성하신 정보와 사진 등 확인후 작업 가능한 헤어전문가가 문의를 드립니다.";
+  const introPlaceholder = isNail
+    ? "손톱을 물어뜯는 습관이 있고 현재 연장이나 젤네일은 되어 있지 않아요. 결과 사진 촬영과 SNS 게시 모두 괜찮습니다."
+    : "어깨 아래 길이고 최근 6개월 안에 펌이나 염색을 한 적이 없어요. 결과 사진 촬영과 SNS 게시 모두 괜찮습니다.";
+
   const filled = countPhotos(photos);
   const hasText = title.trim().length > 0 && body.trim().length > 0;
   const hasTags =
@@ -167,7 +178,7 @@ export default function ComposeForm() {
       <div className="flex-1 px-5 pb-[140px] pt-1">
         <Field
           label="어떤 모델을 하고 싶나요"
-          hint="사진 규격이 갈려서 하나만 고릅니다. 둘 다 하고 싶으면 글을 따로 올려주세요."
+          hint="둘 다 하고 싶으면 글을 따로 올려주세요."
         >
           <div className="flex gap-[7px]">
             {CATEGORIES.map((c) => (
@@ -203,20 +214,20 @@ export default function ComposeForm() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             maxLength={60}
-            placeholder="레이어드 펌 받아보고 싶어요"
+            placeholder={titlePlaceholder}
             className="w-full rounded-panel border border-line bg-card p-[15px] text-section font-semibold outline-none placeholder:font-normal placeholder:text-ink-ghost focus:border-line-chip"
           />
         </Field>
 
         <Field
           label="소개/시술이력/희망스타일"
-          hint="펌, 염색 등 최근 1~2년 내에 시술받으신 이력정보를 자세히 남겨주세요. 최종 희망스타일이나 시술관련 내용을 남겨주시면 작성하신 정보와 사진 등 확인후 작업 가능한 헤어전문가가 문의를 드립니다."
+          hint={introHint}
         >
           <textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
             maxLength={1000}
-            placeholder="어깨 아래 길이고 최근 6개월 안에 펌이나 염색을 한 적이 없어요. 결과 사진 촬영과 SNS 게시 모두 괜찮습니다."
+            placeholder={introPlaceholder}
             className="min-h-[120px] w-full resize-y rounded-panel border border-line bg-card p-[15px] text-sub leading-[1.6] outline-none placeholder:text-ink-ghost focus:border-line-chip"
           />
           <div className="mt-[6px] text-right font-mono text-[11px] text-ink-faint">
