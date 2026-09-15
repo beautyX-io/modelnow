@@ -24,7 +24,7 @@ export interface ModelPost {
   conditions: string[];
   /** 지원자가 고른 연락 방법과 값 */
   contact: ContactInfo;
-  /** 작성자가 직접 입력한 본인 이름. 게시물에는 성만 가리고 보인다(maskName) */
+  /** 작성자가 직접 입력한 본인 이름. 게시물에는 가운데 글자를 가리고 보인다(maskName) */
   name: string;
   /** 시술 전후 촬영·마케팅 활용(초상권) 동의 여부 — 동의해야 글이 올라간다 */
   agreedToPortraitUse: boolean;
@@ -36,12 +36,17 @@ export interface ModelPost {
 }
 
 /**
- * 이름 앞글자만 가린다. "김민서" → "*민서".
+ * 이름 가운데 글자를 가린다. 첫 글자와 끝 글자는 남긴다.
+ * "김민서" → "김*서", "김민" → "김*", "김" → "*".
  * 게시물 목록·상세 어디서든 작성자 이름은 이 함수를 거쳐야 한다.
  */
 export function maskName(name: string): string {
   const trimmed = name.trim();
-  return trimmed ? `*${trimmed.slice(1)}` : "";
+  const len = trimmed.length;
+  if (len === 0) return "";
+  if (len === 1) return "*";
+  if (len === 2) return `${trimmed[0]}*`;
+  return `${trimmed[0]}${"*".repeat(len - 2)}${trimmed[len - 1]}`;
 }
 
 export type NewModelPost = Omit<ModelPost, "id" | "createdAt">;

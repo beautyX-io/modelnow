@@ -6,8 +6,9 @@ import DoneScreen from "@/components/model/DoneScreen";
 import FeedScreen from "@/components/model/FeedScreen";
 import PostDetailScreen from "@/components/model/PostDetailScreen";
 import type { ContactInfo } from "@/lib/contact";
-import { CURRENT_USER, POSTS } from "@/lib/mock-data";
+import { CURRENT_USER } from "@/lib/mock-data";
 import { EMPTY_PHOTOS } from "@/lib/photo-slots";
+import { useRecruitPosts } from "@/lib/use-recruit-posts";
 import type {
   ApplyStep,
   CategoryFilter,
@@ -35,9 +36,10 @@ const INITIAL_CONTACT: ContactInfo = {
  * 화면 전환과 지원서 상태를 한곳에서 들고 있고, 각 화면은 값과 콜백만 받는다.
  */
 export default function ModelFlow() {
+  const posts = useRecruitPosts();
   const [screen, setScreen] = useState<ModelScreen>("feed");
   const [filter, setFilter] = useState<CategoryFilter>("전체");
-  const [postId, setPostId] = useState(POSTS[0].id);
+  const [postId, setPostId] = useState(posts[0].id);
 
   const [step, setStep] = useState<ApplyStep>(1);
   const [photos, setPhotos] = useState<Photos>(EMPTY_PHOTOS);
@@ -45,7 +47,7 @@ export default function ModelFlow() {
   const [note, setNote] = useState("");
   const [contact, setContact] = useState<ContactInfo>(INITIAL_CONTACT);
 
-  const post = POSTS.find((p) => p.id === postId) ?? POSTS[0];
+  const post = posts.find((p) => p.id === postId) ?? posts[0];
 
   /** 완료 화면을 떠날 때 지원서를 초기화한다 */
   function resetApplication() {

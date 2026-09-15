@@ -27,6 +27,7 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_xxxx
 | `/posts/[id]` | 게시물 상세 — 사진 3장, 소개, 연락 수단 |
 | `/recruit` | 디자이너가 올린 구인 공고 → 모집 상세 → 지원서 |
 | `/designer` | 디자이너 측 지원자 목록 · 상세 |
+| `/designer/new` | 디자이너의 모집 공고 작성 |
 
 기준 폭은 402px(iPhone), 데스크톱에서는 480px로 중앙 정렬된다. 매니페스트와 아이콘이 있어 홈 화면에 추가하면 앱처럼 뜬다.
 
@@ -47,6 +48,7 @@ app/
   posts/[id]/page.tsx   게시물 상세
   recruit/page.tsx      구인 공고 플로우
   designer/page.tsx     디자이너 측
+  designer/new/page.tsx 디자이너의 모집 공고 작성
   manifest.ts           웹앱 매니페스트
   globals.css           디자인 토큰 + 커스텀 유틸리티
 components/
@@ -64,7 +66,9 @@ lib/
   use-model-posts.ts     목록 조회 + Realtime 구독 훅
   image.ts               EXIF 보정 + 리사이즈 + Blob 변환
   photo-slots.ts         카테고리별 사진 3장 규격
-  mock-data.ts           구인 공고 · 지원자 목데이터
+  mock-data.ts            구인 공고 · 지원자 목데이터 (씨드)
+  recruit-posts.ts        구인 공고 세션 메모리 저장소 (디자이너가 올린 새 공고)
+  use-recruit-posts.ts    위 저장소 구독 훅
   types.ts, validation.ts
 supabase/
   schema.sql             테이블 · RLS · 삭제 함수 · 사진 버킷 · 예시 글 (SQL Editor 에서 한 번 실행)
@@ -86,7 +90,7 @@ supabase/
 
 **고른 값은 자동으로 정리된다.** 글쓰기 맨 아래 "이렇게 올라갑니다" 카드가 고른 항목을 실시간으로 모아 보여주고, 게시물 상세가 같은 모양으로 그대로 싣는다. 소개 글에 조건을 다시 적을 필요가 없다.
 
-**동의와 본인 확인이 있어야 올라간다.** 등록 버튼 바로 위에 초상권 사용 동의 체크박스와 본인 이름 입력칸이 있다. 체크와 이름 둘 다 채워야 등록 버튼이 켜지고, `lib/model-posts.ts` 의 `agreedToPortraitUse` · `name` 으로 저장된다. 이름은 `maskName` 을 거쳐 앞 글자만 `*` 로 가려 보인다("김민서" → "*민서"). 이 규칙 이전에 저장된 글은 이름 없이, 동의는 된 것으로 취급한다.
+**동의와 본인 확인이 있어야 올라간다.** 등록 버튼 바로 위에 초상권 사용 동의 체크박스와 본인 이름 입력칸이 있다. 체크와 이름 둘 다 채워야 등록 버튼이 켜지고, `lib/model-posts.ts` 의 `agreedToPortraitUse` · `name` 으로 저장된다. 이름은 `maskName` 을 거쳐 가운데 글자만 `*` 로 가려 보인다("김민서" → "김*서"). 이 규칙 이전에 저장된 글은 이름 없이, 동의는 된 것으로 취급한다.
 
 **삭제는 본인만, 비밀번호 4자리로.** 회원가입이 없으니 이 번호가 유일한 본인 확인이다. 글을 올릴 때 `hashPin` 이 SHA-256 해시로 바꿔 `pin_hash` 컬럼에만 남기고 평문은 어디에도 저장하지 않는다. 비교는 클라이언트가 아니라 데이터베이스의 `delete_post_with_pin(post_id, pin)` 함수가 서버에서 한다 — `posts` 테이블에는 DELETE 정책 자체가 없어서, anon 키로 아무리 직접 API를 두드려도 이 함수를 거치지 않고는 글을 지울 수 없다. 틀리면 그 자리에서 오류를 보여주고 입력칸을 비운다. `pin_hash` 가 없는 글(샘플 4개)은 이 함수가 비밀번호 확인 없이 바로 지운다.
 
@@ -107,6 +111,6 @@ supabase/
 
 - 게시판·삭제 함수 외에는 인증이 전혀 없다. 4자리 비밀번호 해시에 솔트가 없어 무차별 대입에 약하다 — 지금 규모에서는 감수할 만하지만 실서비스로 키우면 `delete_post_with_pin` 에 시도 횟수 제한을 붙이는 걸 권한다.
 - 사진·글 업로드에 개수·용량 제한이 없다. `post-photos` 버킷도 anon 이 자유롭게 올릴 수 있게 열려 있어, 실서비스로 가면 Storage 정책에 크기 제한이나 레이트 리밋을 더해야 한다.
-- 구인 공고(`/recruit`)와 디자이너 측(`/designer`) 데이터는 여전히 `lib/mock-data.ts` 목데이터이고, 화면 전환도 URL이 아니라 컴포넌트 상태다. Supabase 로 옮기지 않았다.
+- 구인 공고(`/recruit`)와 디자이너 측(`/designer`) 데이터는 여전히 목데이터다. `/designer/new` 에서 디자이너가 올린 공고는 `lib/recruit-posts.ts` 의 세션 메모리 저장소에만 쌓이고 새로고침하면 사라진다 — Supabase 로 옮기지 않았다. 모델 지원 화면 안 화면 전환도 URL이 아니라 컴포넌트 상태다.
 - 인스타그램 임베드 썸네일은 자리표시자다. oEmbed 연동이 필요하다.
 - 탭바 아이콘은 직접 그린 스트로크 아이콘이다. 화면 안쪽 아이콘 자리는 아직 사각·원 자리표시자다.

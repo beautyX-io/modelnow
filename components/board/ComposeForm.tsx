@@ -353,7 +353,7 @@ export default function ComposeForm() {
               </div>
             </div>
             <p className="mt-[6px] text-[11.5px] leading-[1.5] text-ink-faint">
-              게시물에는 이름 앞 글자를 가리고 표시됩니다. 예) 김민서 → *민서.
+              게시물에는 이름 가운데 글자를 가리고 표시됩니다. 예) 김민서 → 김*서.
               비밀번호는 이 게시물을 삭제할 때만 쓰입니다. 평소 자주쓰는 숫자나
               생년월일 등 기억하기 쉬운 숫자 4자리로 설정해 꼭 기억해주세요.
             </p>

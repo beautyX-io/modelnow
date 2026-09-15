@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
 import Chip from "@/components/ui/Chip";
 import PhotoPlaceholder from "@/components/ui/PhotoPlaceholder";
+import TabBar from "@/components/ui/TabBar";
 import {
   APPLICANT_FILTERS,
   APPLICANTS,
@@ -40,10 +42,20 @@ export default function ApplicantListScreen({
   return (
     <div className="screen-enter flex flex-1 flex-col">
       <header className="px-5 pb-[10px] pt-[calc(env(safe-area-inset-top,0px)+18px)]">
-        <div className="text-meta text-ink-soft">
-          {CURRENT_DESIGNER.salon} · {CURRENT_DESIGNER.area}
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="text-meta text-ink-soft">
+              {CURRENT_DESIGNER.salon} · {CURRENT_DESIGNER.area}
+            </div>
+            <h1 className="mt-1 text-title">지원자 {APPLICANTS.length}명</h1>
+          </div>
+          <Link
+            href="/designer/new"
+            className="mt-[3px] flex-none rounded-full bg-ink px-[14px] py-[8px] text-[12.5px] font-semibold text-white"
+          >
+            글쓰기
+          </Link>
         </div>
-        <h1 className="mt-1 text-title">지원자 {APPLICANTS.length}명</h1>
       </header>
 
       <div className="flex gap-[7px] px-5 pt-2">
@@ -58,7 +70,7 @@ export default function ApplicantListScreen({
         ))}
       </div>
 
-      <div className="grid grid-cols-2 content-start gap-3 px-5 pb-10 pt-4">
+      <div className="grid grid-cols-2 content-start gap-3 px-5 pb-[130px] pt-4">
         {applicants.map((applicant) => (
           <ApplicantCard
             key={applicant.id}
@@ -67,6 +79,8 @@ export default function ApplicantListScreen({
           />
         ))}
       </div>
+
+      <TabBar />
     </div>
   );
 }

@@ -3,7 +3,7 @@
 import Chip from "@/components/ui/Chip";
 import PhotoPlaceholder from "@/components/ui/PhotoPlaceholder";
 import TabBar from "@/components/ui/TabBar";
-import { POSTS } from "@/lib/mock-data";
+import { useRecruitPosts } from "@/lib/use-recruit-posts";
 import type { CategoryFilter, Post } from "@/lib/types";
 
 const FILTERS: CategoryFilter[] = ["전체", "헤어", "네일"];
@@ -20,7 +20,10 @@ export default function FeedScreen({
   onFilterChange,
   onOpenPost,
 }: FeedScreenProps) {
-  const posts = POSTS.filter((p) => filter === "전체" || p.category === filter);
+  const allPosts = useRecruitPosts();
+  const posts = allPosts.filter(
+    (p) => filter === "전체" || p.category === filter,
+  );
 
   return (
     <div className="screen-enter flex flex-1 flex-col">
